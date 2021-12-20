@@ -191,7 +191,6 @@ def main(argv):
         'invalid_challenge': invalid_challenge,
         'request_failure': request_failure,
     }
-    print(argv)
     # Log level
     log_level = PATTERN_LOG_LEVEL.findall(argv[0])
     if log_level:
