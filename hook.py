@@ -10,12 +10,29 @@ import dns.exception
 import re
 import sys
 import socket
+from configparser import ConfigParser
+
+config = ConfigParser()
+config.read("hooks/ovh/ovh.conf")
+default_conf = config["default"]
+
+endpoint = default_conf["endpoint"]
+auth_info = config[endpoint]
+
+application_key = auth_info["application_key"]
+application_secret = auth_info["application_secret"]
+consumer_key = auth_info["consumer_key"]
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
-client = ovh.Client()
+client = ovh.Client(
+    endpoint=endpoint,
+    application_key=application_key,
+    application_secret=application_secret,
+    consumer_key=consumer_key,
+)
 PATTERN_DOMAIN = re.compile(r'^(.*)\.([^\.]+\.[^\.]+)$')
 PATTERN_SUB_DOMAIN = re.compile(r'^(.*)\.([^\.]+)$')
 PATTERN_LOG_LEVEL = re.compile(r'^--level=(\w+)$')
@@ -174,7 +191,7 @@ def main(argv):
         'invalid_challenge': invalid_challenge,
         'request_failure': request_failure,
     }
-
+    print(argv)
     # Log level
     log_level = PATTERN_LOG_LEVEL.findall(argv[0])
     if log_level:
